@@ -41,6 +41,13 @@ export class AppComponent {
   }
 
   todoItemChange (val) {
+    this.todoList = [...this.todoList];
     this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
+  }
+
+  removeTodo (todo) {
+    this.todoList = this.todoList.filter(item => {
+      return item != todo;
+    });
   }
 }

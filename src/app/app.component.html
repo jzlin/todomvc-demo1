@@ -19,7 +19,7 @@
             [(ngModel)]="item.done"
             (ngModelChange)="todoItemChange($event)">
           <label>{{item.text | uppercase}}</label>
-          <button class="destroy"></button>
+          <button class="destroy" (click)="removeTodo(item)"></button>
         </div>
         <input class="edit" value="Create a TodoMVC template">
       </li>
