@@ -9,6 +9,7 @@ export class AppComponent {
   inputHint = 'What needs to be done?';
   todoList: any[] = [];
   todo = '';
+  filterType = '';
 
   addTodo () {
     if (this.todo) {
@@ -26,5 +27,10 @@ export class AppComponent {
     this.todoList = this.todoList.filter(item => {
       return !item.done;
     });
+  }
+
+  filterTypeChange (filterType: string) {
+    console.log(filterType);
+    this.filterType = filterType;
   }
 }

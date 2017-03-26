@@ -22,6 +22,10 @@ export class FooterComponent implements OnInit {
 
   @Output()
   clearComplete = new EventEmitter()
+  filterType = 'All';
+
+  @Output()
+  filterTypeChange = new EventEmitter<string>();
 
   constructor() { }
 
@@ -30,6 +34,11 @@ export class FooterComponent implements OnInit {
 
   clearBtnClick () {
     this.clearComplete.emit();
+  }
+
+  changeFilterType (filterType: string) {
+    this.filterType = filterType;
+    this.filterTypeChange.emit(filterType);
   }
 
 }
