@@ -10,6 +10,7 @@ export class AppComponent {
   todoList: any[] = [];
   todo = '';
   filterType = '';
+  toggleAll = false;
 
   addTodo () {
     if (this.todo) {
@@ -30,7 +31,16 @@ export class AppComponent {
   }
 
   filterTypeChange (filterType: string) {
-    console.log(filterType);
     this.filterType = filterType;
+  }
+
+  toggleAllChange (val) {
+    this.todoList.forEach(item => {
+      item.done = val;
+    });
+  }
+
+  todoItemChange (val) {
+    this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
   }
 }
