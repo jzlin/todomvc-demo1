@@ -12,7 +12,10 @@ export class AppComponent {
 
   addTodo () {
     if (this.todo) {
-      this.todoList.push(this.todo);
+      this.todoList.push({
+        text: this.todo,
+        done: false
+      });
       this.todo = '';
     }
   }
