@@ -13,6 +13,7 @@ export class AppComponent {
   addTodo () {
     if (this.todo) {
       this.todoList.push(this.todo);
+      this.todo = '';
     }
   }
 }
