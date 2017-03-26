@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Http, RequestOptions, Headers } from '@angular/http';
+import { DataService } from "app/data.service";
 
 import { Observable } from 'rxjs';
 
@@ -15,40 +15,24 @@ export class AppComponent implements OnInit {
   filterType = '';
   toggleAll = false;
 
-  private apiHeader = new RequestOptions({
-    headers: new Headers({
-      'authorization': 'token 09123582-43ba-4816-9063-cc6c420540b9'
-    })
-  });
 
-  constructor(private http: Http) {}
+  constructor(private dataSvc: DataService) {}
 
   ngOnInit () {
-    this.getTodoList().subscribe(data => {
+    this.dataSvc.getTodoList().subscribe(data => {
       this.todoList = data;
       this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
     });
   }
 
-  getTodoList () {
-    return this.http.get('./me/todomvc', this.apiHeader).map(res => {
-      return res.json()
-    }).catch(err => {
-      return Observable.of<any[]>([]);
-    });
-  }
-
-  saveTodoList (newTodoList: any[]) {
+  private saveTodoListToDataSvc (newTodoList: any[]) {
     let oldTodoList = [...newTodoList];
     this.todoList = newTodoList;
-    return this.http.post('./me/todomvc', newTodoList, this.apiHeader)
-      .map(res => {
-        return res.json();
-      }).catch(err => {
-        this.todoList = oldTodoList;
-        return Observable.of<any[]>(oldTodoList);
-      });
-
+    return this.dataSvc.saveTodoList(newTodoList).map(data => {
+    }).catch(err => {
+      this.todoList = oldTodoList;
+      return Observable.of<any[]>(oldTodoList);
+    });
   }
 
   addTodo () {
@@ -58,7 +42,7 @@ export class AppComponent implements OnInit {
         text: this.todo,
         done: false
       });
-      this.saveTodoList(newTodoList).subscribe(data => {});
+      this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
       this.todo = '';
     }
   }
@@ -67,7 +51,7 @@ export class AppComponent implements OnInit {
     let newTodoList = this.todoList.filter(item => {
       return !item.done;
     });
-    this.saveTodoList(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
   }
 
   filterTypeChange (filterType: string) {
@@ -79,12 +63,12 @@ export class AppComponent implements OnInit {
     newTodoList.forEach(item => {
       item.done = val;
     });
-    this.saveTodoList(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
   }
 
   todoItemChange (val) {
     let newTodoList = [...this.todoList];
-    this.saveTodoList(newTodoList).subscribe(data => {}, err => {
+    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {}, err => {
       this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
     });
     this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
@@ -94,6 +78,6 @@ export class AppComponent implements OnInit {
     let newTodoList = this.todoList.filter(item => {
       return item != todo;
     });
-    this.saveTodoList(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
   }
 }
