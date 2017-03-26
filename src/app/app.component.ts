@@ -12,10 +12,12 @@ export class AppComponent {
 
   addTodo () {
     if (this.todo) {
-      this.todoList.push({
+      let newTodoList = [...this.todoList];
+      newTodoList.push({
         text: this.todo,
         done: false
       });
+      this.todoList = newTodoList;
       this.todo = '';
     }
   }
