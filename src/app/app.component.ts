@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
     this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
   }
 
-  todoItemChange (val) {
+  todoItemChange () {
     let newTodoList = [...this.todoList];
     this.saveTodoListToDataSvc(newTodoList).subscribe(data => {}, err => {
       this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
@@ -79,5 +79,21 @@ export class AppComponent implements OnInit {
       return item != todo;
     });
     this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
+  }
+
+  enterEditMode (item) {
+    item.editText = item.text;
+    item.editMode = true;
+  }
+
+  editComplete (item) {
+    item.text = item.editText;
+    item.editMode = false;
+    this.todoItemChange();
+  }
+
+  editCancel (item) {
+    item.editMode = false;
+    this.todoItemChange();
   }
 }
