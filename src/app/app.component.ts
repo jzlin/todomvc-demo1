@@ -32,8 +32,8 @@ export class AppComponent implements OnInit {
 
   private subscribeTodo () {
     this.dataSvc.todoListObservable
-      .subscribe(data => {}, oldDataList => {
-        this.todoList = oldDataList;
+      .subscribe(data => {}, oldTodoList => {
+        this.todoList = oldTodoList;
         this.initToggleAll();
         this.subscribeTodo();
       });
@@ -42,6 +42,7 @@ export class AppComponent implements OnInit {
   private saveTodoListToDataSvc (newTodoList: any[]) {
     let oldTodoList = [...this.todoList];
     this.todoList = newTodoList;
+    this.initToggleAll();
     this.dataSvc.saveTodoList(newTodoList, oldTodoList);
   }
 
@@ -69,15 +70,27 @@ export class AppComponent implements OnInit {
   }
 
   toggleAllChange (val) {
-    let newTodoList = [...this.todoList];
-    newTodoList.forEach(item => {
-      item.done = val;
+    let newTodoList = [...this.todoList].map(item => {
+      let newItem = Object.assign({}, item);
+      newItem.done = val;
+      return newItem;
     });
     this.saveTodoListToDataSvc(newTodoList);
   }
 
   todoItemChange () {
     let newTodoList = [...this.todoList];
+    this.saveTodoListToDataSvc(newTodoList);
+  }
+
+  todoDoneChange (todo, checked: boolean) {
+    let newTodoList = [...this.todoList].map(item => {
+      let newItem = Object.assign({}, item);
+      if (item === todo) {
+        newItem.done = checked;
+      }
+      return newItem;
+    });
     this.saveTodoListToDataSvc(newTodoList);
   }
 

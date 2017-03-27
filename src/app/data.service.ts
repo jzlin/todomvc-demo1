@@ -18,6 +18,7 @@ export class DataService {
   private oldData = [];
 
   constructor(private http: Http) {
+    toastr.options.preventDuplicates = true;
     this.todoListObservable = this.todoListSubject
       .do(data => {
         toastr.info("data saving...")

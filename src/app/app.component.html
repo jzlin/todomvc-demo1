@@ -16,8 +16,8 @@
         *ngFor="let item of (todoList | filter : filterType)">
         <div class="view" (dblclick)="enterEditMode(item)">
           <input class="toggle" type="checkbox"
-            [(ngModel)]="item.done"
-            (ngModelChange)="todoItemChange()">
+            [checked]="item.done"
+            (click)="todoDoneChange(item, todoDone.checked)" #todoDone>
           <label>{{item.text | uppercase}}</label>
           <button class="destroy" (click)="removeTodo(item)"></button>
         </div>
