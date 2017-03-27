@@ -1,18 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Headers } from '@angular/http';
 
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class DataService {
 
   private apiHeader = new RequestOptions({
     headers: new Headers({
-      'authorization': 'token 09123582-43ba-4816-9063-cc6c420540b9'
+      'authorization': 'token 47491c71-2e40-42ac-82f6-94d87895f914'
     })
   });
+  private todoListSubject = new Subject<any[]>();
+  todoListObservable: Observable<any>;
 
-  constructor(private http: Http) { }
+  constructor(private http: Http) {
+    this.todoListObservable = this.todoListSubject
+      .debounceTime(1000)
+      .flatMap(data => {
+        console.log(data);
+        return this.http.post('./me/todomvc', data, this.apiHeader)
+          .map(res => {
+            return res.json();
+          }).catch(err => {
+            return Observable.throw('api error');
+          });
+      });
+  }
 
   getTodoList () {
     return this.http.get('./me/todomvc', this.apiHeader).map(res => {
@@ -23,13 +37,7 @@ export class DataService {
   }
 
   saveTodoList (newTodoList: any[]) {
-    return this.http.post('./me/todomvc', newTodoList, this.apiHeader)
-      .map(res => {
-        return res.json();
-      }).catch(err => {
-        return Observable.throw('api error');
-      });
-
+    this.todoListSubject.next(newTodoList);
   }
 
 }

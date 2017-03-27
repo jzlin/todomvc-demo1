@@ -21,18 +21,28 @@ export class AppComponent implements OnInit {
   ngOnInit () {
     this.dataSvc.getTodoList().subscribe(data => {
       this.todoList = data;
-      this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
+      this.initToggleAll();
     });
+    this.subscribeTodo();
+  }
+
+  private initToggleAll () {
+    this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
+  }
+
+  private subscribeTodo () {
+    this.dataSvc.todoListObservable
+      .subscribe(data => {}, err => {
+        this.dataSvc.getTodoList().subscribe(data => {
+          this.todoList = data;
+        });
+        this.initToggleAll();
+      });
   }
 
   private saveTodoListToDataSvc (newTodoList: any[]) {
-    let oldTodoList = [...newTodoList];
     this.todoList = newTodoList;
-    return this.dataSvc.saveTodoList(newTodoList).map(data => {
-    }).catch(err => {
-      this.todoList = oldTodoList;
-      return Observable.of<any[]>(oldTodoList);
-    });
+    this.dataSvc.saveTodoList(newTodoList);
   }
 
   addTodo () {
@@ -42,7 +52,7 @@ export class AppComponent implements OnInit {
         text: this.todo,
         done: false
       });
-      this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
+      this.saveTodoListToDataSvc(newTodoList);
       this.todo = '';
     }
   }
@@ -51,7 +61,7 @@ export class AppComponent implements OnInit {
     let newTodoList = this.todoList.filter(item => {
       return !item.done;
     });
-    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList);
   }
 
   filterTypeChange (filterType: string) {
@@ -63,22 +73,19 @@ export class AppComponent implements OnInit {
     newTodoList.forEach(item => {
       item.done = val;
     });
-    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList);
   }
 
   todoItemChange () {
     let newTodoList = [...this.todoList];
-    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {}, err => {
-      this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
-    });
-    this.toggleAll = this.todoList.filter(item => !item.done).length  === 0;
+    this.saveTodoListToDataSvc(newTodoList);
   }
 
   removeTodo (todo) {
     let newTodoList = this.todoList.filter(item => {
       return item != todo;
     });
-    this.saveTodoListToDataSvc(newTodoList).subscribe(data => {});
+    this.saveTodoListToDataSvc(newTodoList);
   }
 
   enterEditMode (item) {
