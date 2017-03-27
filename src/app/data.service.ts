@@ -3,27 +3,40 @@ import { Http, RequestOptions, Headers } from '@angular/http';
 
 import { Observable, Subject } from 'rxjs';
 
+import * as toastr from "toastr";
+
 @Injectable()
 export class DataService {
 
   private apiHeader = new RequestOptions({
     headers: new Headers({
-      'authorization': 'token 47491c71-2e40-42ac-82f6-94d87895f914'
+      'authorization': 'token a0be69e3-84bd-4998-adaf-d7def77e21a2'
     })
   });
   private todoListSubject = new Subject<any[]>();
   todoListObservable: Observable<any>;
+  private oldData = [];
 
   constructor(private http: Http) {
     this.todoListObservable = this.todoListSubject
+      .do(data => {
+        toastr.info("data saving...")
+        let oldTodoList = data[1];
+        if (this.oldData.length === 0) {
+          this.oldData = oldTodoList;
+        }
+      })
       .debounceTime(1000)
       .flatMap(data => {
-        console.log(data);
-        return this.http.post('./me/todomvc', data, this.apiHeader)
+        let newTodoList = data[0];
+        return this.http.post('./me/todomvc', newTodoList, this.apiHeader)
           .map(res => {
+            toastr.success("data saved");
+            this.oldData = [];
             return res.json();
           }).catch(err => {
-            return Observable.throw('api error');
+            toastr.error('api error');
+            return Observable.throw(this.oldData);
           });
       });
   }
@@ -36,8 +49,8 @@ export class DataService {
     });
   }
 
-  saveTodoList (newTodoList: any[]) {
-    this.todoListSubject.next(newTodoList);
+  saveTodoList (newTodoList: any[], oldTodoList: any[]) {
+    this.todoListSubject.next([newTodoList, oldTodoList]);
   }
 
 }
