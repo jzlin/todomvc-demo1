@@ -3,6 +3,8 @@ import { DataService } from "app/data.service";
 
 import { Observable } from 'rxjs';
 
+import * as toastr from "toastr";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -32,7 +34,9 @@ export class AppComponent implements OnInit {
 
   private subscribeTodo () {
     this.dataSvc.todoListObservable
-      .subscribe(data => {}, err => {
+      .subscribe(data => {
+        toastr.success("data saved");
+      }, err => {
         this.dataSvc.getTodoList().subscribe(data => {
           this.todoList = data;
         });
